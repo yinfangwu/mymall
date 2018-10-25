@@ -100,6 +100,22 @@
       <artifactId>jackson-mapper-asl</artifactId>
       <version>1.9.12</version>
     </dependency>
+    <!-- 使用ObjectMapper -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.9.7</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>2.9.7</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>2.9.7</version>
+    </dependency>
 
     <!-- 连接池 -->
     <dependency>
@@ -169,11 +185,17 @@
       <version>3.1</version>
     </dependency>
 
-    <!--  -->
+    <!-- log4j -->
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-1.2-api</artifactId>
         <version>2.11.1</version>
+    </dependency>
+    <!-- 可以引入日志@Slf4j注解 -->
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.18.2</version>
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/commons-fileupload/commons-fileupload -->
@@ -181,6 +203,13 @@
       <groupId>commons-fileupload</groupId>
       <artifactId>commons-fileupload</artifactId>
       <version>1.2.2</version>
+    </dependency>
+
+    <!-- spring session 单点登录 -->
+    <dependency>
+      <groupId>org.springframework.session</groupId>
+      <artifactId>spring-session-data-redis</artifactId>
+      <version>2.0.6.RELEASE</version>
     </dependency>
 
     <!--  -->
@@ -207,7 +236,7 @@
       <version>0.9.4</version>
     </dependency>
 
-    <!-- alipay -->
+    <!-- alipay sdk依赖-->
     <dependency>
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
@@ -243,12 +272,29 @@
       <artifactId>hamcrest-core</artifactId>
       <version>1.3</version>
     </dependency>
+    <!-- alipay.sdk依赖 -->
+    <dependency>
+      <groupId>com.alipay</groupId>
+      <artifactId>sdk-java</artifactId>
+      <version>20161213173952</version>
+    </dependency>
 
-    <!-- redis -->
+    <!-- redis客户端jedis依赖 -->
     <dependency>
       <groupId>redis.clients</groupId>
       <artifactId>jedis</artifactId>
       <version>2.9.0</version>
+    </dependency>
+    <!-- spring-data-redis依赖 -->
+    <dependency>
+      <groupId>org.springframework.data</groupId>
+      <artifactId>spring-data-redis</artifactId>
+      <version>2.1.0.RELEASE</version>
+    </dependency>
+    <dependency>
+      <groupId>org.redisson</groupId>
+      <artifactId>redisson</artifactId>
+      <version>3.8.2</version>
     </dependency>
 
   </dependencies>
@@ -281,6 +327,7 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.7.0</version>
         <configuration>
+          <!-- todo 重要：编译本地支付宝sdk引入 -->
           <compilerArguments>
             <extdirs>${project.basedir}/src/main/webapp/WEB-INF/lib</extdirs>
           </compilerArguments>
@@ -303,5 +350,47 @@
         <version>2.8.2</version>
       </plugin>
     </plugins>
+
+    <!-- maven 环境隔离 -->
+    <resources>
+      <resource>
+        <directory>src/main/resources.${deploy.type}</directory>
+        <excludes>
+          <exclude>*.jsp</exclude>
+        </excludes>
+      </resource>
+
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+    </resources>
   </build>
+
+  <!--  -->
+  <profiles>
+    <profile>
+      <id>dev</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <deploy.type>dev</deploy.type>
+      </properties>
+    </profile>
+
+    <profile>
+      <id>beta</id>
+      <properties>
+        <deploy.type>beta</deploy.type>
+      </properties>
+    </profile>
+
+    <profile>
+      <id>prod</id>
+      <properties>
+        <deploy.type>prod</deploy.type>
+      </properties>
+    </profile>
+  </profiles>
+
 </project>
